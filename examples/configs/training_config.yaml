@@ -1,0 +1,129 @@
+# 昇腾910C训练配置示例
+# 适用于PyTorch + Torch-NPU
+
+# 模型配置
+model:
+  name: "resnet50"
+  num_classes: 1000
+  pretrained: false
+
+# 数据配置
+data:
+  train_data_path: "/path/to/train"
+  val_data_path: "/path/to/val"
+  num_workers: 8  # 数据加载进程数
+  pin_memory: true
+  prefetch_factor: 2
+  persistent_workers: true
+
+# 训练配置
+training:
+  # 批次大小
+  batch_size: 32  # 每卡batch size
+  micro_batch_size: 8  # 如果启用梯度累积
+  gradient_accumulation_steps: 4  # 梯度累积步数（PCIe场景推荐4-8）
+
+  # 学习率
+  lr: 0.001
+  lr_scheduler: "cosine"  # cosine, linear, step
+  warmup_steps: 1000
+  max_steps: 100000
+
+  # 优化器
+  optimizer: "adamw"
+  weight_decay: 0.01
+  beta1: 0.9
+  beta2: 0.999
+  eps: 1.0e-8
+
+  # 梯度裁剪
+  max_grad_norm: 1.0
+
+  # Epoch数量
+  epochs: 100
+
+# 混合精度配置
+amp:
+  enabled: true
+  dtype: "float16"  # float16 or bfloat16
+  opt_level: "O2"  # O0, O1, O2, O3
+  loss_scale: "dynamic"
+  init_scale: 65536.0
+  growth_factor: 2.0
+  backoff_factor: 0.5
+  growth_interval: 2000
+  keep_batchnorm_fp32: true
+
+# 分布式配置
+distributed:
+  enabled: true
+  backend: "hccl"  # 昇腾使用hccl
+  world_size: 8
+  bucket_cap_mb: 25  # DDP bucket大小（PCIe场景优化）
+  gradient_as_bucket_view: true
+  broadcast_buffers: false
+  find_unused_parameters: false
+
+# HCCL配置（环境变量）
+hccl:
+  algo: "ring"  # ring or tree
+  grad_compression: true  # 梯度压缩
+  stream_num: 2  # 通信流数量
+  buffer_size_mb: 512  # 通信buffer大小
+
+# 内存优化
+memory:
+  gradient_checkpointing: false  # 激活重计算
+  cpu_offload: false  # CPU offload（PCIe场景谨慎使用）
+  empty_cache_interval: 100  # 清理显存碎片间隔
+
+# ZeRO优化
+zero:
+  enabled: false
+  stage: 2  # 1, 2, 3（PCIe场景推荐1或2）
+  overlap_comm: true
+  contiguous_gradients: true
+  reduce_bucket_size: 50000000
+  allgather_bucket_size: 50000000
+
+# 日志配置
+logging:
+  interval: 10  # 日志输出间隔
+  save_interval: 1000  # checkpoint保存间隔
+  eval_interval: 1000  # 验证间隔
+  log_dir: "./logs"
+  tensorboard: true
+
+# Checkpoint配置
+checkpoint:
+  save_path: "./checkpoints"
+  save_total_limit: 5  # 最多保存的checkpoint数
+  resume_from: null  # 从checkpoint恢复
+
+# 性能优化
+performance:
+  # 算子融合
+  combined_enable: true
+  # 任务队列
+  task_queue_enable: true
+  # 动态shape算子
+  dynamic_op: "ADD#MUL"
+  # JIT编译
+  jit_compile: true
+  # 编译缓存
+  op_compiler_cache_mode: "enable"
+  op_compiler_cache_dir: "./cache"
+
+# 评估配置
+evaluation:
+  batch_size: 64
+  metrics: ["accuracy", "top5_accuracy"]
+
+# 硬件配置
+hardware:
+  device: "npu"
+  device_ids: [0, 1, 2, 3, 4, 5, 6, 7]
+  soc_version: "Ascend910C"
+
+# 随机种子
+seed: 42
