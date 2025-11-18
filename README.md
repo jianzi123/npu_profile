@@ -4,10 +4,16 @@
 
 ## 📋 目录
 
+### 实践指南
 - [910C硬件特性](docs/910c_features.md)
 - [并行调优指南](docs/parallel_tuning.md)
 - [训练优化](docs/training_optimization.md)
 - [推理优化](docs/inference_optimization.md)
+
+### 深度分析（理论与建模）
+- [架构深度剖析](docs/deep_dive_architecture.md) - AI Core微架构、内存层次、PCIe互连深度分析
+- [并行性能建模](docs/deep_dive_parallel_performance.md) - 数学建模、扩展性理论、通信优化
+- [量化算法原理](docs/deep_dive_quantization.md) - 量化理论、QAT/PTQ深入、硬件加速原理
 
 ## 🎯 项目目标
 
@@ -17,17 +23,27 @@
 
 ```
 npu_profile/
-├── README.md                           # 项目概述
+├── README.md                                    # 项目概述
 ├── docs/
-│   ├── 910c_features.md               # 910C硬件特性详解
-│   ├── parallel_tuning.md             # 并行调优策略
-│   ├── training_optimization.md       # 训练优化技巧
-│   └── inference_optimization.md      # 推理优化方法
+│   ├── 910c_features.md                        # 910C硬件特性详解
+│   ├── parallel_tuning.md                      # 并行调优策略
+│   ├── training_optimization.md                # 训练优化技巧
+│   ├── inference_optimization.md               # 推理优化方法
+│   ├── deep_dive_architecture.md               # 架构深度剖析（理论）
+│   ├── deep_dive_parallel_performance.md       # 并行性能建模（数学）
+│   └── deep_dive_quantization.md               # 量化算法原理（算法）
 ├── examples/
-│   ├── distributed_training/          # 分布式训练示例
-│   ├── inference_optimization/        # 推理优化示例
-│   └── configs/                       # 配置文件示例
-└── benchmarks/                        # 性能测试脚本
+│   ├── distributed_training/                   # 分布式训练示例
+│   │   ├── train_ddp.py                       # DDP训练脚本
+│   │   └── run_8npu.sh                        # 8卡启动脚本
+│   ├── inference_optimization/                 # 推理优化示例
+│   │   └── inference_optimized.py             # 优化推理代码
+│   └── configs/                                # 配置文件示例
+│       ├── training_config.yaml               # 训练配置
+│       └── inference_config.yaml              # 推理配置
+└── benchmarks/                                 # 性能测试脚本
+    ├── benchmark_communication.py              # 通信性能测试
+    └── README.md
 ```
 
 ## 🚀 快速开始
@@ -83,6 +99,37 @@ npu_profile/
 ## 📊 性能对比
 
 文档中包含了针对不同场景的性能基准测试和优化前后对比。
+
+## 🎓 深度分析特色
+
+本项目不仅提供实践指南，还包含三份深度技术分析文档：
+
+### 1. 架构深度剖析
+- **AI Core微架构**：Cube/Vector/Scalar单元的流水线、吞吐量分析
+- **内存层次详解**：HBM带宽测量、Cache行为、NUMA效应
+- **Roofline模型**：性能上界分析、计算与内存bound判断
+- **算子执行模型**：编译器优化、算子融合收益量化
+- **关键性能陷阱**：隐式同步点、假共享、不规则访问
+
+### 2. 并行性能建模
+- **扩展性理论**：Amdahl定律、通信模型（α-β模型）
+- **梯度累积数学优化**：最优累积步数推导
+- **Ring AllReduce分析**：通信时间公式、效率损失原因
+- **3D并行最优配置**：DP/TP/PP组合的数学建模
+- **ZeRO内存-通信权衡**：Stage 1-3的精确分析
+- **性能预测模型**：端到端训练时间预测公式
+
+### 3. 量化算法原理
+- **量化数学基础**：SQNR公式、量化噪声分析
+- **QAT原理**：STE（直通估计器）、可学习量化参数
+- **PTQ算法**：Min-Max/Percentile/MSE/KL散度方法对比
+- **混合精度搜索**：敏感度分析、贪心/进化算法
+- **INT8/INT4硬件加速**：Cube单元实现、数值精度分析
+- **GPTQ算法**：大模型量化的最优脑量化
+
+**适用人群**：
+- 实践指南：工程师、算法开发者
+- 深度分析：系统架构师、研究人员、需要深度优化的专家
 
 ## 🤝 贡献
 
