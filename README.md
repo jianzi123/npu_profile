@@ -15,6 +15,9 @@
 - [并行性能建模](docs/deep_dive_parallel_performance.md) - 数学建模、扩展性理论、通信优化
 - [量化算法原理](docs/deep_dive_quantization.md) - 量化理论、QAT/PTQ深入、硬件加速原理
 
+### 案例分析
+- [Qwen3-30B完整优化流程](docs/case_study_qwen3_30b.md) - 从模型分析到部署的端到端案例
+
 ## 🎯 项目目标
 
 帮助开发者和研究人员充分利用昇腾910C的硬件能力，针对其PCIe架构特点进行优化，实现最佳的训练和推理性能。
